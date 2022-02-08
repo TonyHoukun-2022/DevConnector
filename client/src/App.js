@@ -1,21 +1,42 @@
-import {BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import {useEffect} from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import store from './store'
+import { loadUser } from './actions/auth';
+
 import Navbar from './components/layout/Navbar';
 import Landing from './components/layout/Landing';
 import Register from './components/auth/Register';
 import Login from './components/auth/Login';
+import Alert from './components/layout/Alert';
+import setAuthToken from './utils/setAuthToken';
+
 import './App.scss';
 
+if (localStorage.token) {
+  setAuthToken(localStorage.token)
+}
+
 const App = () => {
+
+  useEffect(() => {
+    store.dispatch(loadUser())
+  },[])
+
   return (
-    <Router>
-      {/* <nav> tag*/}
-      <Navbar />
-      <Routes>
-        {/* section.landing */}
-        <Route path="/" element={<Landing />} />
-        <Route path="register" element={ <Register />} />
-      </Routes>
-    </Router>
+    <Provider store={store}>
+      <Router>
+        <Navbar />
+        <Route exact path='/' component={Landing} />
+        <section className='container'>
+          <Alert />
+          <Switch>
+            <Route exact path='/register' component={Register} />
+            <Route exact path='/login' component={Login} />
+          </Switch>
+        </section>
+      </Router>
+    </Provider>
   );
 }
 

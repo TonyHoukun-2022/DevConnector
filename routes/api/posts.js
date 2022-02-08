@@ -17,6 +17,7 @@ const Post = require("../../models/Post");
  */
 router.post("/", [auth, check("text", "text is required").not().isEmpty()], async (req, res) => {
   const errors = validationResult(req);
+  debugger
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }

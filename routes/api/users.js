@@ -14,7 +14,7 @@ const jwt = require('jsonwebtoken')
 //@route   GET api/users
 //@desc    Test route
 //@access Public
-router.get("/", (req, res) => res.send('User route'))
+// router.get("/", (req, res) => res.send('User route'))
 
 /** user registration route */
 //@route   POST api/users

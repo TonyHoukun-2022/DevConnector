@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom'
+import { Link, Redirect} from 'react-router-dom'
 // import axios from 'axios'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { login } from '../../actions/auth'
 
 const Login = () => {
+  const { isAuthenticated } = useSelector(state => state.auth)
+  const dispatch = useDispatch()
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,9 +25,18 @@ const Login = () => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-      console.log("login success");
-    
+    // console.log("login success");
+
+    // console.log(email, password)
+    //fire login action in actions/auth.js
+    // login(email, password)
+    dispatch(login(email, password))
   };
+
+  //redirect if logged in 
+  if (isAuthenticated) {
+    return <Redirect to='/dashboard'></Redirect>
+  }
 
   return (
     <section className='container'>
@@ -36,7 +49,7 @@ const Login = () => {
           <input type='email' placeholder='Email Address' name='email' required value={email} onChange={onChangeHandler} />
         </div>
         <div className='form-group'>
-          <input type='password' placeholder='Password' name='password' minLength='6' value={password} onChange={onChangeHandler} />
+          <input type='password' placeholder='Password' name='password' value={password} onChange={onChangeHandler} />
         </div>
         <input type='submit' className='btn btn-primary' value='Login' />
       </form>
@@ -48,4 +61,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login

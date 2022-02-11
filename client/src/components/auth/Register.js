@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom'
+import { Link, Redirect} from 'react-router-dom'
 import { connect } from 'react-redux'
 import { setAlert } from "../../actions/alert"
 import { register } from "../../actions/auth"
@@ -65,6 +65,10 @@ const Register = (props) => {
     }
   }
 
+  if (props.isAuthenticated) {
+    return <Redirect to='/dashboard'/>
+  }
+
   return (
     // <section className='container'>
     <>
@@ -101,8 +105,13 @@ const Register = (props) => {
 Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
   register: PropTypes.func.isRequired,
+  isAuthenticated: PropTypes.bool,
 }
+
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.auth.isAuthenticated,
+});
 
 // connect(stateMap, {actions want to use})
 //setAlert action defined in actions/alert.js
-export default connect(null, {setAlert, register})(Register);
+export default connect(mapStateToProps, {setAlert, register})(Register);

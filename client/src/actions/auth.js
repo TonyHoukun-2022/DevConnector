@@ -7,48 +7,11 @@ import {
     USER_LOADED,
     AUTH_ERROR,
     LOGIN_SUCCESS,
-    LOGIN_FAIL
+    LOGIN_FAIL,
+    LOGOUT,
+    CLEAR_PROFILE
 } from './types'
 import setAuthToken from '../utils/setAuthToken'
-
-//register user
-export const register = ({ name, email, password }) => {
-    return async (dispatch) => {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-
-        const body = JSON.stringify({ name, email, password })
-        
-        try {
-            //register user route
-            const res = await axios.post('/api/users', body, config)
-
-            dispatch({
-                type: REGISTER_SUCCESS,
-                //user token
-                payload: res.data
-            })
-        } catch (err) {
-            const errors = err.response.data.errors
-
-            if (errors) {
-                errors.forEach(
-                    //dispatch action to alert reducer
-                    error => dispatch(
-                        setAlert(error.msg, 'danger', 3000)
-                    )
-                )
-            }
-
-            dispatch({
-                type: REGISTER_FAIL,
-            })
-        }
-    }
-}
 
 //load user => get auth user
 export const loadUser = () => {
@@ -73,8 +36,49 @@ export const loadUser = () => {
     }
 }
 
+//register user
+export const register = ({ name, email, password }) => {
+    return async (dispatch) => {
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const body = JSON.stringify({ name, email, password })
+        
+        try {
+            //register user route
+            const res = await axios.post('/api/users', body, config)
+
+            dispatch({
+                type: REGISTER_SUCCESS,
+                //payload is user token
+                payload: res.data
+            })
+
+            dispatch(loadUser());
+        } catch (err) {
+            const errors = err.response.data.errors
+
+            if (errors) {
+                errors.forEach(
+                    //dispatch action to alert reducer
+                    error => dispatch(
+                        setAlert(error.msg, 'danger', 3000)
+                    )
+                )
+            }
+
+            dispatch({
+                type: REGISTER_FAIL,
+            })
+        }
+    }
+}
+
 //login user
-export const login= ({ email, password }) => {
+export const login= ( email, password ) => {
   return async (dispatch) => {
     const config = {
       headers: {
@@ -94,6 +98,8 @@ export const login= ({ email, password }) => {
         payload: res.data,
       });
         
+      dispatch(loadUser())
+        
     } catch (err) {
       const errors = err.response.data.errors;
 
@@ -110,3 +116,11 @@ export const login= ({ email, password }) => {
     }
   };
 };
+
+//logout & clear profile
+export const logout = () => {
+    return (dispatch) => {
+        dispatch({type: CLEAR_PROFILE})
+        dispatch({ type: LOGOUT })
+    }
+}

@@ -3,8 +3,10 @@ const router = express.Router();
 const auth = require("../../middleware/auth");
 const Profile = require("../../models/Profile");
 const User = require("../../models/User");
+const Post = require("../../models/Post")
 const { check, validationResult } = require("express-validator");
-const request = require("request");
+// const request = require("request");
+const axios = require('axios')
 const config = require("config");
 
 //@route   GET api/profile
@@ -250,6 +252,9 @@ router.post(
  */
 router.delete("/", auth, async (req, res) => {
   try {
+    //remove user posts
+    await Post.deleteMany({ user: req.user.id })
+    
     //remove user profile from profiles collection
     await Profile.findOneAndRemove({ user: req.user.id }); ////req.user.id from auth middleware
     //remove user from users collection
@@ -351,6 +356,7 @@ router.put(
       profile.education.unshift(newEdu);
       await profile.save();
       res.json(profile);
+      
     } catch (err) {
       console.err(err.message);
       res.status(500).send("server error");

@@ -131,9 +131,10 @@ router.put("/like/:id", auth, async (req, res) => {
 
     //check if the post has already been liked
     //filter out one user's like
-    const postByUserLength = post.likes.filter((like) => like.user.toString() === req.user.id).length;
+    const likeByUserLength = post.likes.filter((like) => like.user.toString() === req.user.id).length;
 
-    if (postByUserLength > 0) {
+    // one user can only like once
+    if (likeByUserLength > 0) {
       return res.status(400).json({ msg: "post already liked" });
     }
 
